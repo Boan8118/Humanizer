@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Humanizer — Edit the Robot Out of Your Writing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#14161c;
+    --panel:#1b1e26;
+    --panel-line:#2a2e39;
+    --paper:#f1ece0;
+    --paper-dim:#c9c4b6;
+    --red:#e2483a;
+    --ochre:#d9a441;
+    --slate:#7c8299;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--ink);
+    color:var(--paper);
+    font-family:'Inter', sans-serif;
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  .serif{font-family:'Source Serif 4', serif;}
+  .mono{font-family:'JetBrains Mono', monospace;}
+  a{color:inherit;}
+
+  /* Layout scaffold */
+  .wrap{max-width:1080px; margin:0 auto; padding:0 28px;}
+  section{padding:100px 0;}
+  @media (max-width:700px){ section{padding:64px 0;} }
+
+  /* Nav */
+  nav{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:24px 28px; max-width:1080px; margin:0 auto;
+  }
+  .wordmark{font-family:'Source Serif 4', serif; font-size:1.15rem; font-style:italic;}
+  .wordmark span{color:var(--red);}
+  nav a.cta{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.78rem;
+    border:1px solid var(--panel-line);
+    padding:8px 16px;
+    border-radius:2px;
+    text-decoration:none;
+    letter-spacing:0.03em;
+  }
+  nav a.cta:hover{border-color:var(--red); color:var(--red);}
+
+  /* Hero */
+  .hero{padding-top:60px; padding-bottom:40px; position:relative;}
+  .eyebrow{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.75rem;
+    color:var(--red);
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    margin-bottom:18px;
+    display:block;
+  }
+  h1{
+    font-family:'Source Serif 4', serif;
+    font-weight:600;
+    font-size:clamp(2.4rem, 5vw, 4rem);
+    line-height:1.05;
+    letter-spacing:-0.01em;
+    max-width:780px;
+  }
+  h1 em{font-style:italic; color:var(--red); font-weight:500;}
+  .sub{
+    color:var(--paper-dim);
+    font-size:1.05rem;
+    max-width:520px;
+    margin-top:22px;
+  }
+  .hero-ctas{display:flex; gap:14px; margin-top:34px; flex-wrap:wrap;}
+  .btn-primary, .btn-secondary{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.82rem;
+    padding:13px 22px;
+    border-radius:2px;
+    text-decoration:none;
+    letter-spacing:0.02em;
+  }
+  .btn-primary{background:var(--red); color:var(--ink); font-weight:500;}
+  .btn-primary:hover{background:#f05c4d;}
+  .btn-secondary{border:1px solid var(--panel-line); color:var(--paper);}
+  .btn-secondary:hover{border-color:var(--paper-dim);}
+
+  /* Manuscript demo - the signature element */
+  .manuscript{
+    margin-top:64px;
+    background:var(--panel);
+    border:1px solid var(--panel-line);
+    border-radius:4px;
+    padding:0;
+    position:relative;
+    display:grid;
+    grid-template-columns:36px 1fr;
+    overflow:hidden;
+  }
+  .margin-rule{
+    background:repeating-linear-gradient(
+      to bottom, transparent, transparent 27px, var(--panel-line) 27px, var(--panel-line) 28px
+    );
+    border-right:1px solid var(--panel-line);
+    position:relative;
+  }
+  .margin-mark{
+    position:absolute;
+    color:var(--red);
+    font-family:'Source Serif 4', serif;
+    font-style:italic;
+    font-size:0.95rem;
+    left:8px;
+  }
+  .ms-body{padding:26px 30px;}
+  .ms-line{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.92rem;
+    color:var(--paper-dim);
+    line-height:2;
+  }
+  .ms-line .strike{
+    text-decoration:line-through;
+    text-decoration-color:var(--red);
+    text-decoration-thickness:1.5px;
+    color:#5a5f6e;
+  }
+  .ms-line .insert{
+    font-family:'Source Serif 4', serif;
+    color:var(--paper);
+    font-style:italic;
+    border-bottom:1px dotted var(--ochre);
+    padding-bottom:1px;
+  }
+  .ms-caret{color:var(--ochre); font-size:0.75rem; vertical-align:super;}
+
+  /* How it works */
+  .steps{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:32px;
+    margin-top:48px;
+  }
+  @media (max-width:700px){ .steps{grid-template-columns:1fr;} }
+  .step{border-top:1px solid var(--panel-line); padding-top:20px;}
+  .step .num{
+    font-family:'JetBrains Mono', monospace;
+    color:var(--red);
+    font-size:0.85rem;
+    display:block;
+    margin-bottom:10px;
+  }
+  .step h3{font-family:'Source Serif 4', serif; font-weight:600; font-size:1.2rem; margin-bottom:8px;}
+  .step p{color:var(--paper-dim); font-size:0.92rem;}
+
+  h2{
+    font-family:'Source Serif 4', serif;
+    font-weight:600;
+    font-size:clamp(1.7rem, 3vw, 2.3rem);
+    max-width:560px;
+  }
+  .section-sub{color:var(--paper-dim); max-width:520px; margin-top:14px; font-size:0.98rem;}
+
+  /* Feature grid */
+  .features{
+    display:grid;
+    grid-template-columns:repeat(2, 1fr);
+    gap:1px;
+    background:var(--panel-line);
+    margin-top:48px;
+    border:1px solid var(--panel-line);
+  }
+  @media (max-width:700px){ .features{grid-template-columns:1fr;} }
+  .feature{background:var(--ink); padding:32px;}
+  .feature h4{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.85rem;
+    color:var(--ochre);
+    margin-bottom:10px;
+    letter-spacing:0.02em;
+  }
+  .feature p{color:var(--paper-dim); font-size:0.92rem;}
+
+  /* Pro mode band */
+  .pro-band{
+    background:var(--panel);
+    border-top:1px solid var(--panel-line);
+    border-bottom:1px solid var(--panel-line);
+  }
+  .pro-inner{
+    display:flex; justify-content:space-between; align-items:center; gap:40px; flex-wrap:wrap;
+  }
+  .pro-inner p{color:var(--paper-dim); font-size:0.95rem; max-width:420px;}
+
+  /* Footer */
+  footer{
+    padding:48px 0 60px;
+    border-top:1px solid var(--panel-line);
+    color:var(--slate);
+    font-size:0.82rem;
+    display:flex;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:12px;
+  }
+  footer a{text-decoration:none; color:var(--paper-dim);}
+  footer a:hover{color:var(--red);}
+
+  ::selection{background:var(--red); color:var(--ink);}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wordmark">human<span>ize</span>.</div>
+  <a class="cta" href="tool.html">Open the Tool →</a>
+</nav>
+
+<div class="wrap">
+  <section class="hero">
+    <span class="eyebrow">// a browser-based rewrite tool</span>
+    <h1>Your draft reads like it was <em>written by a policy</em>, not a person.</h1>
+    <p class="sub">Humanize takes AI-flattened text and edits it back into something with a pulse — varied rhythm, plainer words, the small imperfections that make writing sound like someone actually wrote it.</p>
+    <div class="hero-ctas">
+      <a class="btn-primary" href="tool.html">Try it free, no signup</a>
+      <a class="btn-secondary" href="#how">See how it edits</a>
+    </div>
+
+    <div class="manuscript">
+      <div class="margin-rule">
+        <span class="margin-mark" style="top:14px;">¶</span>
+        <span class="margin-mark" style="top:70px;">✓</span>
+      </div>
+      <div class="ms-body">
+        <div class="ms-line"><span class="strike">It is important to note that the utilization of</span> <span class="insert">Honestly, using</span> this approach can facilitate <span class="strike">significant improvements.</span> <span class="insert">a real difference.</span></div>
+        <div class="ms-line" style="margin-top:14px;">Furthermore<span class="ms-caret">^</span>, <span class="insert">Plus,</span> the system leverages a variety of <span class="insert">uses a bunch of</span> techniques to optimize <span class="insert">get better</span> results.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="how">
+    <span class="eyebrow">// the edit pass</span>
+    <h2>Three passes, same paragraph.</h2>
+    <p class="section-sub">It's not a black box — it's the same edits a good editor makes by hand, run automatically and tuned to a tone you pick.</p>
+    <div class="steps">
+      <div class="step">
+        <span class="num">01</span>
+        <h3>Paste your draft</h3>
+        <p>Anything with that flattened, over-hedged AI cadence. Works on paragraphs, emails, product copy, essays.</p>
+      </div>
+      <div class="step">
+        <span class="num">02</span>
+        <h3>Pick a tone and intensity</h3>
+        <p>Casual, conversational, professional, or academic-lite — and how heavy a hand to use on the rewrite.</p>
+      </div>
+      <div class="step">
+        <span class="num">03</span>
+        <h3>Read the markup</h3>
+        <p>See exactly what changed in a diff view, copy the result, and keep a running history of every pass.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <span class="eyebrow">// under the hood</span>
+    <h2>What it actually edits</h2>
+    <div class="features">
+      <div class="feature">
+        <h4>BUZZWORD STRIP</h4>
+        <p>Swaps "utilize," "leverage," "delve into," "furthermore" and the rest of the AI phrasebook for words a person would actually say.</p>
+      </div>
+      <div class="feature">
+        <h4>RHYTHM VARIANCE</h4>
+        <p>Breaks up uniform sentence lengths — joins some short ones, splits some long ones, so it doesn't read like a metronome.</p>
+      </div>
+      <div class="feature">
+        <h4>CONTRACTION PASS</h4>
+        <p>Tone-aware contractions. Casual gets loose and conversational; professional stays buttoned up.</p>
+      </div>
+      <div class="feature">
+        <h4>PRIVATE BY DEFAULT</h4>
+        <p>The free rule-based engine runs entirely in your browser. Nothing you paste is sent anywhere.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<section class="pro-band">
+  <div class="wrap pro-inner">
+    <div>
+      <span class="eyebrow">// coming next</span>
+      <h2 style="font-size:1.5rem;">Pro mode: model-powered rewrites</h2>
+      <p>A heavier rewrite pass powered by an actual language model, for text where rule-based edits aren't enough. Runs through a small backend so no API key ever touches the browser.</p>
+    </div>
+    <a class="btn-secondary" href="https://github.com/" target="_blank" rel="noopener">See the repo</a>
+  </div>
+</section>
+
+<div class="wrap">
+  <footer>
+    <span>humanize. — an editing pass for AI-written drafts.</span>
+    <a href="tool.html">Open the tool</a>
+  </footer>
+</div>
+
+</body>
+</html>

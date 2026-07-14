@@ -1,0 +1,7 @@
+name = "humanizer-pro"
+main = "worker.js"
+compatibility_date = "2026-01-01"
+
+# Secrets (set via `wrangler secret put`, not stored here):
+#   ANTHROPIC_API_KEY
+#   SHARED_SECRET
